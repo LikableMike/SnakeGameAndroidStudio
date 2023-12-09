@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">SnakeFinal</string>
     <string name="tap_to_play">Tap To Play!</string>
+    <string name="try_again">Try Again!!</string>
 </resources>
