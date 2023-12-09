@@ -20,9 +20,6 @@ import android.view.SurfaceView;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
-//Next thig i wish tto work on is the very poor framrate and the fact that the physics/snake speed is dependent oon the
-//frame rate. take a look at the food size attribute ad try to keep frame rate constant while updating speed independently.
 class SnakeGame extends SurfaceView implements Runnable{
 
     // Objects for the game loop/thread
@@ -31,8 +28,6 @@ class SnakeGame extends SurfaceView implements Runnable{
     private long mNextFrameTime;
     // Is the game currently playing and or paused?
     private volatile boolean mPlaying = false;
-    private volatile boolean mPaused = false;
-    private volatile boolean GAME_OVER = true;
 
     private volatile GAME_STATE CURRENT_STATE = GAME_STATE.START_SCREEN;
 
@@ -40,13 +35,14 @@ class SnakeGame extends SurfaceView implements Runnable{
     private Bitmap helpScreen;
     private Bitmap pauseScreen;
     private Bitmap gameOverScreen;
+    private Bitmap backGround;
+    private Bitmap border;
 
     // for playing sound effects
     //make soundn abstract class
     private SoundPool mSP;
     private int mEat_ID = -1;
     private int mCrashID = -1;
-
     private int mSongID = -1;
 
     // The size in segments of the playable area
@@ -64,10 +60,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     final long MILLIS_PER_SECOND = 1000;
     private int blockSize;
     private final Point screenSize;
-    private Bitmap backGround;
-    private Bitmap border;
     private final Context gameContext;
-
     private PauseButton pauseButton;
 
 
@@ -78,7 +71,6 @@ class SnakeGame extends SurfaceView implements Runnable{
         screenSize = size;
         gameContext = context;
         highScore = 0;
-
 
         // Work out how many pixels each block is
         findGameSize(size);
@@ -98,7 +90,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     public void newGame() {
 
         // reset the snake
-        mSnake.reset(screenSize.x, screenSize.y);
+        mSnake.reset();
         FOOD.clear();
         FOOD.add(new Apple(gameContext,
                 new Point(NUM_BLOCKS_WIDE / 2 * blockSize, mNumBlocksHigh / 2 * blockSize),
@@ -113,9 +105,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         mScore = 0;
         // Setup mNextFrameTime so an update can triggered
         mNextFrameTime = System.currentTimeMillis();
-
     }
-
 
     // Handles the game loop
     @Override
@@ -148,7 +138,6 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     // Update all the game objects
     public void update() {
-
         // Move the snake
         mSnake.move();
 
@@ -162,18 +151,13 @@ class SnakeGame extends SurfaceView implements Runnable{
                 // Play a sound
                // mSP.play(mEat_ID, 1, 1, 0, 0, 1);
             }
-
         }
-
-        //Need to clear out the food list and reset to one apple so ned to make a starting apple method
         // Did the snake die?
-            if (mSnake.detectDeath()) {
-                // Pause the game ready to start again
-                mSP.play(mCrashID, 1, 1, 0, 0, 1);
-                CURRENT_STATE = GAME_STATE.GAME_OVER_SCREEN;
-                GAME_OVER = true;
+        if (mSnake.detectDeath()) {
+            // Pause the game ready to start again
+            mSP.play(mCrashID, 1, 1, 0, 0, 1);
+            CURRENT_STATE = GAME_STATE.GAME_OVER_SCREEN;
         }
-
     }
 
 
@@ -189,7 +173,7 @@ class SnakeGame extends SurfaceView implements Runnable{
             // Fill the screen with a color
             mCanvas.drawBitmap(backGround, null, new Rect(0, 0, mCanvas.getWidth() * 30 / NUM_BLOCKS_WIDE, (mCanvas.getHeight()- mNumBlocksHigh -16) * 17/mNumBlocksHigh), null);
 
-            //Draw a grid
+            //Draw a grid for debugging
 //            mPaint.setColor(Color.argb(255, 50, 240, 150));
 //            for(int i = 0; i < screenSize.x - blockSize; i += blockSize){
 //                mCanvas.drawLine(i, blockSize, i, screenSize.y - blockSize, mPaint);
@@ -252,37 +236,21 @@ class SnakeGame extends SurfaceView implements Runnable{
                     case TUTORIAL_SCREEN:
                         CURRENT_STATE = GAME_STATE.PAUSE_SCREEN;
                         mSP.play(mSongID, .5f, .5f, 0, 500, 1);
-                        mPaused = true;
                         newGame();
                         return true;
                     case GAME_OVER_SCREEN:
                         CURRENT_STATE = GAME_STATE.PAUSE_SCREEN;
-                        mPaused = true;
                         newGame();
                         return true;
                     case PAUSE_SCREEN:
                         CURRENT_STATE = GAME_STATE.PLAYING_SCREEN;
-                        mPaused = false;
                         return true;
 
                 }
-                if (mPaused) {
-                    mPaused = false;
-
-                    // Don't want to process snake direction for this tap
-                    return true;
-                }
-
-//                if(GAME_OVER){
-//                    GAME_OVER = false;
-//                    newGame();
-//                    return true;
-//                }
 
                 if(motionEvent.getX() - pauseButton.getX() <= pauseButton.getButtonSize() &&
                         motionEvent.getY() - pauseButton.getY() <= pauseButton.getButtonSize()){
                     CURRENT_STATE = GAME_STATE.PAUSE_SCREEN;
-                    mPaused = true;
                     return true;
                 }
                 // Let the Snake class handle the input
@@ -398,7 +366,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     public Snake makeSnake(Context context){
         return new Snake(context,
                 new Point(screenSize.x, screenSize.y),
-                blockSize, NUM_BLOCKS_WIDE, mNumBlocksHigh);
+                blockSize);
     }
 
     public int getmScore(){
@@ -409,16 +377,4 @@ class SnakeGame extends SurfaceView implements Runnable{
         this.mScore += add;
     }
 
-    public void decreaseScore(int sub){
-        this.mScore -= sub;
-    }
-
-
-    public long getMillisPerSecond(){
-        return this.MILLIS_PER_SECOND;
-    }
-
-    public long getSpeed(){
-        return this.TARGET_FPS;
-    }
 }

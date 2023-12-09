@@ -3,13 +3,9 @@ package com.example.snakefinal;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Point;
 
-import java.util.Random;
-
-public class Banana extends Food implements Powerup{
+public class Banana extends Food {
 
     Banana(Context context, Point sr, int s){
         this.location = new Point();
@@ -17,9 +13,6 @@ public class Banana extends Food implements Powerup{
         this.mSize = s;
         // Hide the apple off-screen until the game starts
         this.location.x = -10;
-        this.hasDuration = false;
-        this.Duration = new duration(10);
-
         this.value = 10;
 
         // Load the image to the bitmap

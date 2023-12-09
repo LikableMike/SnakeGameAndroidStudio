@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class FoodFactory {
-    private int foodTypes;
+    private final int foodTypes;
 
     FoodFactory(int foodTypes){
         this.foodTypes = foodTypes;
@@ -13,6 +13,9 @@ public class FoodFactory {
 
     public void createFood(ArrayList<Food> foodList, int score, Context context, Point point, int blockSize, Snake snake){
         for(int i = foodList.size(); i < score / 50 + 1; i++) {
+            if(i > 5){
+                break;
+            }
             Random rand = new Random();
             int food = rand.nextInt(6) + 1;
             switch (food) {
@@ -32,7 +35,7 @@ public class FoodFactory {
                     foodList.add(new badapple(context, findSpawn(foodList, point.x, point.y, blockSize,snake), blockSize));
                     break;
                 case 6:
-                    if(score > 50)
+                    if(score > 100)
                         foodList.add(new Bomb(context, findSpawn(foodList, point.x, point.y, blockSize, snake), blockSize));
                     createFood(foodList, score, context, point, blockSize ,snake);
                     break;
@@ -48,34 +51,19 @@ public class FoodFactory {
         spawn.x = (random.nextInt(x - 2) + 2) * blockSize;
         spawn.y = (random.nextInt(y - 2) + 2) * blockSize;
 
-        ArrayList<Point> takenSpawns = new ArrayList<Point>();
+        ArrayList<Point> takenSpawns = new ArrayList<>();
         for(int i = 0; i < foodList.size(); i++) {
             takenSpawns.add(new Point(foodList.get(i).getLocation().x, foodList.get(i).getLocation().y));
         }
 
-        for(int i = 0; i < snake.getSegmentLocations().size(); i++){
-            takenSpawns.add(snake.getSegmentLocations().get(i));
-        }
+        takenSpawns.addAll(snake.getSegmentLocations());
 
         for(int i = 0; i < takenSpawns.size(); i++){
-            if(Math.abs(spawn.x - takenSpawns.get(i).x) <= blockSize / 2 &&
-                    Math.abs(spawn.y - takenSpawns.get(i).y) <= blockSize / 2){
+            if((Math.abs(spawn.x - takenSpawns.get(i).x) <= blockSize / 2) &&
+                    (Math.abs(spawn.y - takenSpawns.get(i).y) <= blockSize / 2)){
                 return findSpawn(foodList, x, y, blockSize, snake);
             }
         }
-
-//            if(Math.abs(spawn.x - foodList.get(i).getLocation().x) <= blockSize / 2 &&
-//               Math.abs(spawn.y - foodList.get(i).getLocation().y) <= blockSize / 2) || (
-//                       Math.abs((spawn.x) - )
-//                    ){
-//            }
-//        }
-
-
         return spawn;
-
-    }
-    public int getFoodTypes(){
-        return this.foodTypes;
     }
 }

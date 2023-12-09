@@ -14,21 +14,17 @@ import java.util.ArrayList;
 class Snake {
 
     private float Speed;
-
     int lives;
     // The location in the grid of all the segments
-    private ArrayList<Point> segmentLocations;
-
+    private final ArrayList<Point> segmentLocations;
     // How big is each segment of the snake?
-    private int mSegmentSize;
-
+    private final int mSegmentSize;
     // How big is the entire grid
-    private Point mMoveRange;
+    private final Point mMoveRange;
 
     // Where is the centre of the screen
     // horizontally in pixels?
-    private int halfWayPoint;
-
+    private final int halfWayPoint;
     // For tracking movement Heading
     private enum Heading {
         UP, RIGHT, DOWN, LEFT
@@ -49,10 +45,7 @@ class Snake {
     private Bitmap mBitmapBody2;
 
 
-    Snake(Context context, Point mr, int ss, int NUM_BLOCKS_WIDE, int mNumBlocksHigh) {
-
-
-
+    Snake(Context context, Point mr, int ss) {
         // Initialize our ArrayList
         segmentLocations = new ArrayList<>();
 
@@ -128,7 +121,7 @@ class Snake {
     }
 
     // Get the snake ready for a new game
-    void reset(int w, int h) {
+    void reset() {
 
         // Reset the heading
         heading = Heading.RIGHT;
@@ -155,7 +148,6 @@ class Snake {
         // Move the head in the appropriate heading
         // Get the existing head position
         Point p = segmentLocations.get(0);
-
 
         // Move it appropriately
         switch (heading) {
@@ -268,8 +260,6 @@ class Snake {
             if(colorLength > 7){
                 colorLength = 0;
             }
-
-
         }
 
         // Don't run this code if ArrayList has nothing in it
@@ -364,10 +354,6 @@ class Snake {
 
     public int getSegmentSize(){
         return this.mSegmentSize;
-    }
-
-    public void Die(){
-
     }
 
     public int getLives(){

@@ -14,9 +14,7 @@ public class badapple extends Food{
         // Hide the apple off-screen until the game starts
         this.location = new Point();
         this.location.x = -10;
-        this.hasDuration = false;
         this.value = 0;
-
         this.mBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.badapple);
         this.mBitmap = Bitmap.createScaledBitmap(this.mBitmap, s, s, false);
         this.spawn();

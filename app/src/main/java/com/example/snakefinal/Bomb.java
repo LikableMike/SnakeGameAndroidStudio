@@ -3,12 +3,9 @@ package com.example.snakefinal;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Point;
-import java.util.Random;
 
-class Bomb extends Food implements Powerup{
+class Bomb extends Food {
 
     /// Set up the apple in the constructor
     Bomb(Context context, Point sr, int s){
@@ -19,9 +16,7 @@ class Bomb extends Food implements Powerup{
         // Hide the apple off-screen until the game starts
         this.location = new Point();
         this.location.x = -10;
-        this.hasDuration = false;
         this.value = 0;
-
         this.mBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.bomb);
         this.mBitmap = Bitmap.createScaledBitmap(this.mBitmap, s, s, false);
         this.spawn();
