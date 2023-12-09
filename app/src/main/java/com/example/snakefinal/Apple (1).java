@@ -30,9 +30,7 @@ class Apple extends Food implements Powerup{
 
     @Override
     public void applyMod(SnakeGame game, Snake snake){
-
         game.increaseScore(value);
-        this.spawn();
     }
 
 }

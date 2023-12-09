@@ -18,9 +18,10 @@ public class Food{
 
     public void spawn(){
         // Choose two random values and place the apple
-        Random random = new Random();
-        location.x = (random.nextInt(mSpawnRange.x- 2) + 1) * mSize;
-        location.y = (random.nextInt(mSpawnRange.y - 2)+ 1) * mSize;
+        //is now done in food factory
+//        Random random = new Random();
+        location.x = mSpawnRange.x;
+        location.y = mSpawnRange.y;
     }
 
     //Getters and setters

@@ -11,30 +11,30 @@ public class FoodFactory {
         this.foodTypes = foodTypes;
     }
 
-    public void createFood(ArrayList<Food> foodList, int score, Context context, Point point, int blockSize){
+    public void createFood(ArrayList<Food> foodList, int score, Context context, Point point, int blockSize, Snake snake){
         for(int i = foodList.size(); i < score / 50 + 1; i++) {
             Random rand = new Random();
             int food = rand.nextInt(6) + 1;
             switch (food) {
                 case 1:
-                    foodList.add(new Apple(context, findSpawn(foodList, point.x, point.y), blockSize));
+                    foodList.add(new Apple(context, findSpawn(foodList, point.x, point.y, blockSize,snake), blockSize));
                     break;
                 case 2:
-                    foodList.add(new Banana(context, findSpawn(foodList, point.x, point.y), blockSize));
+                    foodList.add(new Banana(context, findSpawn(foodList, point.x, point.y, blockSize,snake), blockSize));
                     break;
                 case 3:
-                    foodList.add(new Raspberry(context, findSpawn(foodList, point.x, point.y), blockSize));
+                    foodList.add(new Raspberry(context, findSpawn(foodList, point.x, point.y, blockSize,snake), blockSize));
                     break;
                 case 4:
-                    foodList.add(new GoldenApple(context, findSpawn(foodList, point.x, point.y), blockSize));
+                    foodList.add(new GoldenApple(context, findSpawn(foodList, point.x, point.y, blockSize,snake), blockSize));
                     break;
                 case 5:
-                    foodList.add(new badapple(context, findSpawn(foodList, point.x, point.y), blockSize));
+                    foodList.add(new badapple(context, findSpawn(foodList, point.x, point.y, blockSize,snake), blockSize));
                     break;
                 case 6:
                     if(score > 50)
-                        foodList.add(new Bomb(context, findSpawn(foodList, point.x, point.y), blockSize));
-                    createFood(foodList, score, context, point, blockSize);
+                        foodList.add(new Bomb(context, findSpawn(foodList, point.x, point.y, blockSize, snake), blockSize));
+                    createFood(foodList, score, context, point, blockSize ,snake);
                     break;
 
                     default:
@@ -42,14 +42,36 @@ public class FoodFactory {
             }
         }
     }
-    public Point findSpawn(ArrayList<Food> foodList, int x, int y){
-        Point spawn = new Point(x, y);
-        for(int i = 0; i < foodList.size(); i++){
-            if(spawn.x == foodList.get(i).getLocation().x &&
-               spawn.y == foodList.get(i).getLocation().y){
-                return findSpawn(foodList, x, y);
+    public Point findSpawn(ArrayList<Food> foodList, int x, int y, int blockSize ,Snake snake){
+        Point spawn = new Point();
+        Random random = new Random();
+        spawn.x = (random.nextInt(x - 2) + 2) * blockSize;
+        spawn.y = (random.nextInt(y - 2) + 2) * blockSize;
+
+        ArrayList<Point> takenSpawns = new ArrayList<Point>();
+        for(int i = 0; i < foodList.size(); i++) {
+            takenSpawns.add(new Point(foodList.get(i).getLocation().x, foodList.get(i).getLocation().y));
+        }
+
+        for(int i = 0; i < snake.getSegmentLocations().size(); i++){
+            takenSpawns.add(snake.getSegmentLocations().get(i));
+        }
+
+        for(int i = 0; i < takenSpawns.size(); i++){
+            if(Math.abs(spawn.x - takenSpawns.get(i).x) <= blockSize / 2 &&
+                    Math.abs(spawn.y - takenSpawns.get(i).y) <= blockSize / 2){
+                return findSpawn(foodList, x, y, blockSize, snake);
             }
         }
+
+//            if(Math.abs(spawn.x - foodList.get(i).getLocation().x) <= blockSize / 2 &&
+//               Math.abs(spawn.y - foodList.get(i).getLocation().y) <= blockSize / 2) || (
+//                       Math.abs((spawn.x) - )
+//                    ){
+//            }
+//        }
+
+
         return spawn;
 
     }

@@ -377,4 +377,8 @@ class Snake {
     public void setLives(int add){
         this.lives = add;
     }
+
+    public ArrayList<Point> getSegmentLocations(){
+        return this.segmentLocations;
+    }
 }

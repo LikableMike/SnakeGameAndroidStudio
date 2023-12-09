@@ -47,6 +47,8 @@ class SnakeGame extends SurfaceView implements Runnable{
     private int mEat_ID = -1;
     private int mCrashID = -1;
 
+    private int mSongID = -1;
+
     // The size in segments of the playable area
     private final int NUM_BLOCKS_WIDE = 16;
     private int mNumBlocksHigh;
@@ -83,10 +85,12 @@ class SnakeGame extends SurfaceView implements Runnable{
         loadBackground(context);
         loadScreens(context);
         initializeSoundPool(context);
+
         FOOD = new ArrayList<Food>();
         mSurfaceHolder = getHolder();
         mPaint = new Paint();
         mSnake = makeSnake(context);
+
 
     }
 
@@ -97,7 +101,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         mSnake.reset(screenSize.x, screenSize.y);
         FOOD.clear();
         FOOD.add(new Apple(gameContext,
-                new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),
+                new Point(NUM_BLOCKS_WIDE / 2 * blockSize, mNumBlocksHigh / 2 * blockSize),
                 blockSize));
 
         foodFactory = new FoodFactory(FOOD_TYPES);
@@ -116,6 +120,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     // Handles the game loop
     @Override
     public void run() {
+
         while (mPlaying) {
             if(CURRENT_STATE == GAME_STATE.PLAYING_SCREEN) {
                 if (updateRequired()) {
@@ -153,8 +158,7 @@ class SnakeGame extends SurfaceView implements Runnable{
                 FOOD.get(i).applyMod(this, mSnake);
                 FOOD.remove(FOOD.get(i));
                 mSP.play(mEat_ID, 1, 1, 0, 0, 1);
-                foodFactory.createFood(FOOD,getmScore(),getContext(),
-                                foodFactory.findSpawn(FOOD,NUM_BLOCKS_WIDE-1, mNumBlocksHigh-1), blockSize);
+                foodFactory.createFood(FOOD,getmScore(),getContext(), new Point(NUM_BLOCKS_WIDE-1, mNumBlocksHigh-1), blockSize, mSnake);
                 // Play a sound
                // mSP.play(mEat_ID, 1, 1, 0, 0, 1);
             }
@@ -172,11 +176,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     }
 
-    //Implement later
-    public void deathAnimation(Snake mSnake){
-        mPaused = true;
 
-    }
 
     // Do all the drawing
     public void draw() {
@@ -190,13 +190,13 @@ class SnakeGame extends SurfaceView implements Runnable{
             mCanvas.drawBitmap(backGround, null, new Rect(0, 0, mCanvas.getWidth() * 30 / NUM_BLOCKS_WIDE, (mCanvas.getHeight()- mNumBlocksHigh -16) * 17/mNumBlocksHigh), null);
 
             //Draw a grid
-            mPaint.setColor(Color.argb(255, 50, 240, 150));
-            for(int i = 0; i < screenSize.x - blockSize; i += blockSize){
-                mCanvas.drawLine(i, blockSize, i, screenSize.y - blockSize, mPaint);
-            }
-            for(int i = 0; i < screenSize.y - blockSize; i += blockSize){
-                mCanvas.drawLine(blockSize, i, screenSize.x - blockSize, i, mPaint);
-            }
+//            mPaint.setColor(Color.argb(255, 50, 240, 150));
+//            for(int i = 0; i < screenSize.x - blockSize; i += blockSize){
+//                mCanvas.drawLine(i, blockSize, i, screenSize.y - blockSize, mPaint);
+//            }
+//            for(int i = 0; i < screenSize.y - blockSize; i += blockSize){
+//                mCanvas.drawLine(blockSize, i, screenSize.x - blockSize, i, mPaint);
+//            }
 
             //Draw the game border
             mCanvas.drawBitmap(border, null, new Rect(0, 0, mCanvas.getWidth(),mCanvas.getHeight()), null);
@@ -250,6 +250,11 @@ class SnakeGame extends SurfaceView implements Runnable{
                         CURRENT_STATE = GAME_STATE.TUTORIAL_SCREEN;
                         return true;
                     case TUTORIAL_SCREEN:
+                        CURRENT_STATE = GAME_STATE.PAUSE_SCREEN;
+                        mSP.play(mSongID, .5f, .5f, 0, 500, 1);
+                        mPaused = true;
+                        newGame();
+                        return true;
                     case GAME_OVER_SCREEN:
                         CURRENT_STATE = GAME_STATE.PAUSE_SCREEN;
                         mPaused = true;
@@ -322,6 +327,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     public void startScreen(Canvas mCanvas){
         mCanvas.drawBitmap(startScreen, null, new Rect(0, 0, mCanvas.getWidth(),mCanvas.getHeight()), null);
+        mCanvas.drawBitmap(border, null, new Rect(0, 0, mCanvas.getWidth(),mCanvas.getHeight()), null);
     }
 
     public void tutorialScreen(Canvas mCanvas){
@@ -375,11 +381,14 @@ class SnakeGame extends SurfaceView implements Runnable{
             AssetFileDescriptor descriptor;
 
             // Prepare the sounds in memory
-            descriptor = assetManager.openFd("get_apple.ogg");
+            descriptor = assetManager.openFd("EatSound.ogg");
             mEat_ID = mSP.load(descriptor, 0);
 
-            descriptor = assetManager.openFd("snake_death.ogg");
+            descriptor = assetManager.openFd("DeathSound.ogg");
             mCrashID = mSP.load(descriptor, 0);
+
+            descriptor = assetManager.openFd("Music.ogg");
+            mSongID = mSP.load(descriptor, 0);
 
         } catch (IOException e) {
             // Error
