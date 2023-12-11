@@ -28,9 +28,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     private long mNextFrameTime;
     // Is the game currently playing and or paused?
     private volatile boolean mPlaying = false;
-
     private volatile GAME_STATE CURRENT_STATE = GAME_STATE.START_SCREEN;
-
     private Bitmap startScreen;
     private Bitmap helpScreen;
     private Bitmap pauseScreen;
@@ -82,20 +80,16 @@ class SnakeGame extends SurfaceView implements Runnable{
         mSurfaceHolder = getHolder();
         mPaint = new Paint();
         mSnake = makeSnake(context);
-
-
     }
 
     // Called to start a new game
     public void newGame() {
-
         // reset the snake
         mSnake.reset();
         FOOD.clear();
         FOOD.add(new Apple(gameContext,
                 new Point(NUM_BLOCKS_WIDE / 2 * blockSize, mNumBlocksHigh / 2 * blockSize),
                 blockSize));
-
         foodFactory = new FoodFactory(FOOD_TYPES);
 
         if(mScore / 10 > highScore){
@@ -160,8 +154,6 @@ class SnakeGame extends SurfaceView implements Runnable{
         }
     }
 
-
-
     // Do all the drawing
     public void draw() {
         // Get a lock on the mCanvas
@@ -218,7 +210,6 @@ class SnakeGame extends SurfaceView implements Runnable{
                 case GAME_OVER_SCREEN:
                     deathScreen(mCanvas);
                     break;
-
             }
             // Unlock the mCanvas and reveal the graphics for this frame
             mSurfaceHolder.unlockCanvasAndPost(mCanvas);
@@ -232,10 +223,11 @@ class SnakeGame extends SurfaceView implements Runnable{
                 switch (CURRENT_STATE){
                     case START_SCREEN:
                         CURRENT_STATE = GAME_STATE.TUTORIAL_SCREEN;
+                        mSP.play(mSongID, .5f, .5f, 0, -1, 1);
+
                         return true;
                     case TUTORIAL_SCREEN:
                         CURRENT_STATE = GAME_STATE.PAUSE_SCREEN;
-                        mSP.play(mSongID, .5f, .5f, 0, 500, 1);
                         newGame();
                         return true;
                     case GAME_OVER_SCREEN:
@@ -245,7 +237,6 @@ class SnakeGame extends SurfaceView implements Runnable{
                     case PAUSE_SCREEN:
                         CURRENT_STATE = GAME_STATE.PLAYING_SCREEN;
                         return true;
-
                 }
 
                 if(motionEvent.getX() - pauseButton.getX() <= pauseButton.getButtonSize() &&
@@ -265,7 +256,6 @@ class SnakeGame extends SurfaceView implements Runnable{
         return true;
     }
 
-
     // Stop the thread
     public void pause() {
         mPlaying = false;
@@ -275,7 +265,6 @@ class SnakeGame extends SurfaceView implements Runnable{
             // Error
         }
     }
-
 
     // Start the thread
     public void resume() {
@@ -357,7 +346,6 @@ class SnakeGame extends SurfaceView implements Runnable{
 
             descriptor = assetManager.openFd("Music.ogg");
             mSongID = mSP.load(descriptor, 0);
-
         } catch (IOException e) {
             // Error
         }

@@ -14,8 +14,7 @@ public class Raspberry extends Food{
         // Hide the apple off-screen until the game starts
         this.location.x = -10;
         this.value = 10;
-        // Load the image to the bitmap
-        // Resize the bitmap
+
         this.mBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.raspberry);
         this.mBitmap = Bitmap.createScaledBitmap(this.mBitmap, s, s, false);
         this.spawn();

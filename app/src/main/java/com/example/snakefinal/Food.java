@@ -12,9 +12,6 @@ public class Food{
     protected int value;
 
     public void spawn(){
-        // Choose two random values and place the apple
-        //is now done in food factory
-//        Random random = new Random();
         location.x = mSpawnRange.x;
         location.y = mSpawnRange.y;
     }
